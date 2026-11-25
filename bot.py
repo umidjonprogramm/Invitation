@@ -5,7 +5,7 @@ import time
 import telebot
 from telebot import types
 
-BOT_TOKEN = os.getenv("8911257881:AAF3HDU2jk89GV5aNxmXL_a2tSx962ypgmw")
+BOT_TOKEN = os.getenv("8911257881:AAHl3hTiAItxhMRVMx2VvoJQqnTs6HWpW4M")
 ADMIN_ID = 6713735399
 CARD_NUMBER = "5614 6820 0945 5967"
 CARD_HOLDER = "N. A"
