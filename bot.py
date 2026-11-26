@@ -5,7 +5,7 @@ from flask import Flask, request
 import telebot
 from telebot import types
 
-BOT_TOKEN = (os.getenv("BOT_TOKEN") or "8911257881:AAHl3hTiAItxhMRVMx2VvoJQqnTs6HWpW4M").strip()
+BOT_TOKEN = "8911257881:AAEqrJjE3kAIoqJLX1ynrOToq78SZQ5i6GA"
 ADMIN_ID = 6713735399
 CARD_NUMBER = "5614 6820 0945 5967"
 CARD_HOLDER = "N. A"
