@@ -1,25 +1,20 @@
 import json
 import os
 import sqlite3
-from flask import Flask, request
 import telebot
 from telebot import types
 
-BOT_TOKEN = "8911257881:AAEqrJjE3kAIoqJLX1ynrOToq78SZQ5i6GA"
+BOT_TOKEN = (os.getenv("8911257881:AAEqrJjE3kAIoqJLX1ynrOToq78SZQ5i6GA"))
 ADMIN_ID = 6713735399
 CARD_NUMBER = "5614 6820 0945 5967"
 CARD_HOLDER = "N. A"
 PRICE = "15 000 so'm"
 MINI_APP_URL = "https://umidjonprogramm.github.io/1nvitation/"
 
-WEBHOOK_PATH = f"/webhook/{BOT_TOKEN}"
-WEBHOOK_URL = f"https://makentoken.pythonanywhere.com{WEBHOOK_PATH}"
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "invitations.db")
 
 bot = telebot.TeleBot(BOT_TOKEN)
-app = Flask(__name__)
 
 conn = sqlite3.connect(DB_PATH, check_same_thread=False)
 cursor = conn.cursor()
@@ -69,10 +64,10 @@ def send_create_menu(chat_id, user_id):
             web_app=types.WebAppInfo(url=MINI_APP_URL)
         )
         markup.add(web_btn)
-    url_btn = types.InlineKeyboardButton(text="🌐 Brauzerda ochish", url=MINI_APP_URL)
+    url_btn = types.InlineKeyboardButton(text="🌐 Brauzerda oching", url=MINI_APP_URL)
     markup.add(url_btn)
 
-    role_text = "👑 Admin rejimi (BEPUL)" if is_admin(user_id) else "✅ To'lov tasdiqlangan"
+    role_text = "👑 Owner rejimi" if is_admin(user_id) else "✅ To'lov tasdiqlangan"
     bot.send_message(
         chat_id,
         f"{role_text}\n\nTaklifnoma yaratish uchun quyidagi tugmani bosing:",
@@ -212,14 +207,7 @@ def handle_other_text(message):
         send_payment_info(message.chat.id, user_id, full_name)
 
 
-@app.post(WEBHOOK_PATH)
-def telegram_webhook():
-    json_str = request.get_data().decode("UTF-8")
-    update = telebot.types.Update.de_json(json_str)
-    bot.process_new_updates([update])
-    return "OK", 200
-
-
-@app.get("/")
-def index():
-    return "Bot webhook is active", 200
+if __name__ == "__main__":
+    print("Invitation bot polling ishga tushdi...", flush=True)
+    bot.remove_webhook()
+    bot.infinity_polling(skip_pending=False, timeout=20, long_polling_timeout=20)
