@@ -1,21 +1,25 @@
 import json
 import os
 import sqlite3
-import time
+from flask import Flask, request
 import telebot
 from telebot import types
 
-BOT_TOKEN = os.getenv("8911257881:AAHl3hTiAItxhMRVMx2VvoJQqnTs6HWpW4M")
+BOT_TOKEN = (os.getenv("BOT_TOKEN") or "8911257881:AAHl3hTiAItxhMRVMx2VvoJQqnTs6HWpW4M").strip()
 ADMIN_ID = 6713735399
 CARD_NUMBER = "5614 6820 0945 5967"
 CARD_HOLDER = "N. A"
 PRICE = "15 000 so'm"
 MINI_APP_URL = "https://umidjonprogramm.github.io/1nvitation/"
 
+WEBHOOK_PATH = f"/webhook/{BOT_TOKEN}"
+WEBHOOK_URL = f"https://makentoken.pythonanywhere.com{WEBHOOK_PATH}"
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "invitations.db")
 
 bot = telebot.TeleBot(BOT_TOKEN)
+app = Flask(__name__)
 
 conn = sqlite3.connect(DB_PATH, check_same_thread=False)
 cursor = conn.cursor()
@@ -208,11 +212,14 @@ def handle_other_text(message):
         send_payment_info(message.chat.id, user_id, full_name)
 
 
-if __name__ == "__main__":
-    print("Bot ishga tushdi...")
-    while True:
-        try:
-            bot.infinity_polling(none_stop=True, interval=0, timeout=20)
-        except Exception as e:
-            print("Polling xatosi:", e)
-            time.sleep(5)
+@app.post(WEBHOOK_PATH)
+def telegram_webhook():
+    json_str = request.get_data().decode("UTF-8")
+    update = telebot.types.Update.de_json(json_str)
+    bot.process_new_updates([update])
+    return "OK", 200
+
+
+@app.get("/")
+def index():
+    return "Bot webhook is active", 200
